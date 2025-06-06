@@ -1,16 +1,21 @@
 name: CI
-
 on:
   push:
     branches:
       - main
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: |
           ls -la
           chmod +x backup.sh
           ./backup.sh
+          if [ -f "backup_$(date +%F).tar.gz" ]; then
+            echo "Backup test passed"
+            exit 0
+          else
+            echo "Backup test failed"
+            exit 1
+          fi
