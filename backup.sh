@@ -1,12 +1,19 @@
 #!/bin/bash
-
-# Папка для бэкапа
 BACKUP_DIR="backup_$(date +%F)"
-TXT_FILES=$(find . -name "*.txt")
-
+ARCHIVE="${BACKUP_DIR}.tar.gz"
 mkdir -p "$BACKUP_DIR"
-cp $TXT_FILES "$BACKUP_DIR/" 2>/dev/null
-tar -czf "${BACKUP_DIR}.tar.gz" "$BACKUP_DIR"
+COUNT=0
+while IFS= read -r file; do
+    if [ -n "$file" ]; then
+        cp "$file" "$BACKUP_DIR/" && ((COUNT++))
+    fi
+done < <(find . -name "*.txt")
+if [ $COUNT -eq 0 ]; then
+    echo "No .txt files found"
+    rm -rf "$BACKUP_DIR"
+    exit 1
+fi
+tar -czf "$ARCHIVE" "$BACKUP_DIR" || { echo "Failed to create archive"; exit 1; }
 rm -rf "$BACKUP_DIR"
-
-echo "Бэкап завершён: $(echo $TXT_FILES | wc -w) файлов"
+echo "Бэкап завершён: $COUNT файлов"
+exit 0
