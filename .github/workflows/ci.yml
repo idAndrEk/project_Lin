@@ -1,13 +1,16 @@
 name: CI
+
 on:
   push:
     branches:
       - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - run: |
-          chmod +x test.sh
-          ./test.sh
+          ls -la
+          chmod +x backup.sh
+          ./backup.sh
